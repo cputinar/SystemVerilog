@@ -66,7 +66,7 @@ module ALU(output logic[8:0] out, input[8:0] a, b, input[3:0] opcode);
 					end //of S7,s9 case
 			S10: out = binput; 
 			S11: out = '0;
-			S15: $finish //HALT (for now, we shouldn't actually be using stop)
+			S15: $stop; //HALT (for now, we shouldn't actually be using stop)
 		endcase
 
 endmodule 
