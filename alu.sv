@@ -1,7 +1,9 @@
 
 module ALU(output logic[8:0] out, input[8:0] a, b, input[3:0] opcode);
+	
 
-
+	logic binput;
+	
 	parameter S0 = 4'b0000; //AND
     parameter S1 = 4'b0001; //OR
 	parameter S2 = 4'b0010; //NOT
