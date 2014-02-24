@@ -53,7 +53,7 @@ module ALU(output logic[8:0] out, input[8:0] a, b, input[3:0] opcode);
 			S5: out = a << 1;
 			S6: out = a >> 1;
 			S7, S9: begin
-						cin = 1; //since to make b in 2's complement
+						cin = 1; 
 						CLA(carries, cout, P[2:0], G[2:0], cin);
 						out[2:0] = carries;
 						cin = cout;
@@ -64,12 +64,12 @@ module ALU(output logic[8:0] out, input[8:0] a, b, input[3:0] opcode);
 						out[8:6] = carries;
 						out = out ^ P;
 					end //of S7,s9 case
-			S10: out = binput; //which is set to "data"
-			S11: //NOP
-			S15: //HALT
+			S10: out = binput; 
+			S11: out = '0;
+			S15: $finish //HALT (for now, we shouldn't actually be using stop)
 		endcase
 
-endmodule //ALU
+endmodule 
 
 
 
@@ -84,4 +84,4 @@ module CLA(output logic[2:0] carries, output logic cout,
 									(ps[2] & ps[1] & ps[0] & cin);
 
 
-endmodule //CLA
+endmodule 
