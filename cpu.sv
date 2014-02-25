@@ -1,77 +1,64 @@
-
 module ALU(output logic[8:0] out, input[8:0] a, b, input[3:0] opcode);
 
+logic binput;
 
-	parameter S0 = 4'b0000; //AND
-    parameter S1 = 4'b0001; //OR
-	parameter S2 = 4'b0010; //NOT
-	parameter S3 = 4'b0011; //ADD
-	parameter S4 = 4'b0100; //MOV
-	parameter S5 = 4'b0101; //SLL
-	parameter S6 = 4'b0110; //SRL
-	parameter S7 = 4'b0111; //SUB
-	parameter S8 = 4'b1000; //ADDI
-	parameter S9 = 4'b1001; //SUBI
-	parameter S10 = 4'b1010; //MOVI
-	parameter S11 = 4'b1011; //NOP
-	parameter S15 = 4'b1111; //HALT
-
-	always_comb
-		if((opcode === S7) || (opcode === S9))
-			begin
-				binput = ~b;		
-			end
-		else binput = b;
-
-		if((opcode === S3) || (opcode === S7) || (opcode === S8) || (opcode === S9))
-			begin
-				logic[8:0] G, P;
-					G = a & binput;
-					P = a ^ binput;
-					logic [2:0] carries;
-					logic cin, cout;
-			end
-		else
-
-		casez(opcode)
-			S0: out = a & b;
-			S1: out = a ^ b;
-			S2: out = ~a;
-			S3, S8: begin
-						cin = 0;
-						CLA(carries, cout, P[2:0], G[2:0], cin);
-						out[2:0] = carries;
-						cin = cout;
-						CLA(carries, cout, P[5:3], G[5:3], cin);
-						out[5:3] = carries;
-						cin = cout;
-						CLA(carries, cout, P[8:6], G[8:6], cin);
-						out[8:6] = carries;
-						out = out ^ P;
-					end //of S3,S8 case
-			S4: out = a;
-			S5: out = a << 1;
-			S6: out = a >> 1;
-			S7, S9: begin
-						cin = 1; 
-						CLA(carries, cout, P[2:0], G[2:0], cin);
-						out[2:0] = carries;
-						cin = cout;
-						CLA(carries, cout, P[5:3], G[5:3], cin);
-						out[5:3] = carries;
-						cin = cout;
-						CLA(carries, cout, P[8:6], G[8:6], cin);
-						out[8:6] = carries;
-						out = out ^ P;
-					end //of S7,s9 case
-			S10: out = binput; 
-			S11: out = '0;
-			S15: $finish //HALT (for now, we shouldn't actually be using stop)
-		endcase
-
-endmodule 
+parameter S0 = 4'b0000; //AND
+parameter S1 = 4'b0001; //OR
+parameter S2 = 4'b0010; //NOT
+parameter S3 = 4'b0011; //ADD
+parameter S4 = 4'b0100; //MOV
+parameter S5 = 4'b0101; //SLL
+parameter S6 = 4'b0110; //SRL
+parameter S7 = 4'b0111; //SUB
+parameter S8 = 4'b1000; //ADDI
+parameter S9 = 4'b1001; //SUBI
+parameter S10 = 4'b1010; //MOVI
+parameter S11 = 4'b1011; //NOP
+parameter S15 = 4'b1111; //HALT
 
 
+logic[8:0] G, P;
+logic [2:0] carries;
+logic [2:0] cin, cout;
+
+CLA myCLA1(carries[2:0], cout[0], P[2:0], G[2:0], 1'b0);
+
+CLA myCLA2(carries[5:3], cout[1], P[5:3], G[5:3], cout[0]);
+
+CLA myCLA3(carries[8:6], cout[2], P[8:6], G[8:6], cout[1]);
+
+
+always_comb
+if((opcode === S7) || (opcode === S9))
+binput = ~b+1'b1;
+else binput = b;
+
+assign 	ps = a ^ binput;
+ assign	gs = a & binput;
+
+always @(*) begin
+    if((opcode === S3) || (opcode === S7) || (opcode === S8) || (opcode === S9)) begin
+        G = a & binput;
+        P = a ^ binput;
+    end
+else
+
+case(opcode)
+S0: out = a & b;
+S1: out = a | b;
+S2: out = ~a;
+S3: out = a ^ binput ^ carries;
+S4: out = a;
+S5: out = a << 1;
+S6: out = a >> 1;
+S7: out = a ^ binput ^ carries;
+S8: out = a ^ binput ^ carries;
+S9: out = a ^ binput ^ carries;
+
+S10: out = binput;
+endcase
+
+endmodule
 
 
 module CLA(output logic[2:0] carries, output logic cout,
@@ -111,7 +98,6 @@ module sevenseg(input  logic [3:0] data,
       4'hf: segments = 7'b100_0111;
     endcase
 endmodule
-
 
 
 
