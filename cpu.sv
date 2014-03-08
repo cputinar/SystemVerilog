@@ -73,34 +73,6 @@ module CLA(output logic[2:0] carries, output logic cout,
 
 endmodule 
 
-
-module sevenseg(input  logic [3:0] data,
-                output logic [6:0] segments);
-  always_comb
-    case (data)
-	//possible decoder?
-	//
-      4'h0: segments = 7'b111_1110;
-      4'h1: segments = 7'b011_0000;
-      4'h2: segments = 7'b110_1101;
-      4'h3: segments = 7'b111_1001;
-      4'h4: segments = 7'b011_0011;
-      4'h5: segments = 7'b101_1011;
-      4'h6: segments = 7'b101_1111;
-      4'h7: segments = 7'b111_0000;
-      4'h8: segments = 7'b111_1111;
-      4'h9: segments = 7'b111_0011;
-      4'ha: segments = 7'b111_0111;
-      4'hb: segments = 7'b001_1111;
-      4'hc: segments = 7'b000_1101;
-      4'hd: segments = 7'b011_1101;
-      4'he: segments = 7'b100_1111;
-      4'hf: segments = 7'b100_0111;
-    endcase
-endmodule
-
-
-
 module mux8 //mux8
   #(parameter width=4)
   (input logic [width-1:0] d0, d1, d2, d3, 
@@ -122,5 +94,42 @@ module mux8 //mux8
 endmodule
 
 
+module PC(output [9:0] output_addr, input logic reset, clock)
+	always_ff @(posedge clock, reset)
+		if(reset)
+			output_addr=10b'0000000000;
+		else
+			output_addr=output_addr+1;
+endmodule
 
+
+module mux8 
+  (input logic [width-1:0] d0, d1, d2, d3, 
+                           d4, d5, d6, d7,
+  input logic [2:0] s, 
+  output logic [width-1:0] y);
+  
+  always_comb
+  case(s)
+    0: y = d0;
+    1: y = d1;
+    2: y = d2;
+    3: y = d3;
+    4: y = d4;
+    5: y = d5;
+    6: y = d6;
+    7: y = d7;
+  endcase
+endmodule
+
+
+module register_bank (output logic[8:0] R1, R2, R3, R4, R5, R6, input logic clock, );
+
+endmodule
+
+
+
+module CPU();
+
+endmodule
 
